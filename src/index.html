@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.14.1/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.14.1/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div id="terminal"></div>
+
+  <script>
+    const terminal = new Terminal();
+    terminal.open(document.getElementById('terminal'));
+
+    const socket = io();
+
+    socket.on('output', (data) => {
+      terminal.write(data);
+    });
+
+    terminal.onData((data) => {
+      socket.emit('input', data);
+    });
+  </script>
+</body>
+</html>
