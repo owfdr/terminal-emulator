@@ -7,7 +7,8 @@ const pty = require("node-pty");
 app.use(express.static(__dirname));
 
 io.on("connection", function (socket) {
-  console.log("a user connected");
+  console.log("a user has been connected");
+  console.log(socket.id);
 
   const shell = pty.spawn(
     process.platform === "win32" ? "cmd.exe" : "bash",
@@ -22,14 +23,17 @@ io.on("connection", function (socket) {
   );
 
   shell.onData((data) => {
+    console.log("output", data);
     socket.emit("output", data);
   });
 
   socket.on("input", (data) => {
+    console.log("input", data);
     shell.write(data);
   });
 
   socket.on("resize", (size) => {
+    console.log("resize", size);
     shell.resize(size.cols, size.rows);
   });
 

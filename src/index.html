@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.14.1/css/xterm.css" />
-    <script src="https://cdn.jsdelivr.net/npm/xterm@4.14.1/lib/xterm.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.14.1/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.2.1/lib/xterm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
   <div id="terminal"></div>
 
   <script>
     const terminal = new Terminal();
+    const fitAddon = new FitAddon.FitAddon();
+    terminal.loadAddon(fitAddon);
     terminal.open(document.getElementById('terminal'));
+    fitAddon.fit();
 
     const socket = io();
 
@@ -22,6 +27,16 @@
     terminal.onData((data) => {
       socket.emit('input', data);
     });
+
+    function resizeTerminal() {
+      fitAddon.fit();
+      socket.emit("resize", { cols: terminal.cols, rows: terminal.rows });
+    }
+
+    window.addEventListener("resize", resizeTerminal);
+
+    resizeTerminal();
   </script>
 </body>
+
 </html>
